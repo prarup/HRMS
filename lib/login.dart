@@ -133,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock),
-                    hintText: 'Password',
+                    hintText: 'Passwords',
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
