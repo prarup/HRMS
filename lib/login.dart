@@ -173,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         child: const Text(
                           'Sign in',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.red),
                         ),
                       ),
               ],
