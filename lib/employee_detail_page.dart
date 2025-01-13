@@ -131,7 +131,7 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
 
     try {
       // Retrieve the token
-      final token = await _storage.read(key: 'auth_token');
+      String? token = await _storage.read(key: 'auth_token');
       if (token == null) {
         _showError('User not authenticated. Please login again.');
         return;
