@@ -257,7 +257,7 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Employee Detail',
+          'Employee Details',
           style: TextStyle(fontFamily: 'Times New Roman',color: Colors.white), // Set the text color to white
         ),
         backgroundColor: Color(0xFF3d3d61), // Set the background color (use your preferred color)
