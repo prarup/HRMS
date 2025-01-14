@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'login.dart'; // Import LoginPage for navigation
 import 'package:http/http.dart' as http;
@@ -37,7 +37,6 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
   }
 
   // Method to get address from coordinates using reverse geocoding
-  // Method to get address from coordinates using OpenStreetMap's Nominatim reverse geocoding
   Future<String> _getAddressFromCoordinates(double latitude, double longitude) async {
     final url = Uri.parse(
         'https://nominatim.openstreetmap.org/reverse?lat=$latitude&lon=$longitude&format=json&addressdetails=1');
@@ -49,9 +48,7 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
         final data = json.decode(response.body);
 
         if (data != null && data['address'] != null) {
-          // Extract a formatted address
           String address = '${data['display_name'] ?? ''}, ';
-                          
           return address.isNotEmpty ? address : 'Address not found';
         } else {
           return 'Address not found';
@@ -64,23 +61,18 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
     }
   }
 
-
   // Method to mark check-in with geolocation
   void _markCheckin() async {
     try {
-      // Get current GPS location
       Position position = await _getCurrentLocation();
-
-      // Get the address based on the current coordinates
       String address = await _getAddressFromCoordinates(position.latitude, position.longitude);
 
-      // Create the geolocation data
       String geolocation = json.encode({
         "type": "FeatureCollection",
         "features": [
           {
             "type": "Feature",
-            "properties": {"name": address},  // Use dynamic address
+            "properties": {"name": address},
             "geometry": {
               "type": "Point",
               "coordinates": [position.longitude, position.latitude]
@@ -88,16 +80,16 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
           }
         ]
       });
-      String loc = json.encode({
-            "type": "Feature",
-            "properties": {"name": address},  // Use dynamic address
-            "geometry": {
-              "type": "Point",
-              "coordinates": [position.longitude, position.latitude]
-            }
-          });
 
-      // Send POST request with geolocation data
+      String loc = json.encode({
+        "type": "Feature",
+        "properties": {"name": address},
+        "geometry": {
+          "type": "Point",
+          "coordinates": [position.longitude, position.latitude]
+        }
+      });
+
       final url = Uri.parse('https://88collection.dndts.net/api/method/checkin');
       final response = await http.post(
         url,
@@ -105,24 +97,16 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
           'Authorization': await _storage.read(key: 'auth_token') ?? '',
           'Content-Type': 'application/json',
         },
-        body: json.encode({"geolocation": geolocation,
-        "list":loc}),
+        body: json.encode({"geolocation": geolocation, "list": loc}),
       ).timeout(Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        // Handle success
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Check-in successful at $address')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Check-in successful at $address')));
       } else {
-        // Handle failure
         throw Exception('Failed to mark check-in');
       }
     } catch (e) {
-      // Handle error (e.g., location not found, API error)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
     }
   }
 
@@ -130,7 +114,6 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
     final url = Uri.parse('https://88collection.dndts.net/api/method/employee_detail');
 
     try {
-      // Retrieve the token
       String? token = await _storage.read(key: 'auth_token');
       if (token == null) {
         _showError('User not authenticated. Please login again.');
@@ -176,10 +159,7 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
   }
 
   void _logout() async {
-    // Delete the token
     await _storage.delete(key: 'auth_token');
-
-    // Navigate back to the login page
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
@@ -190,7 +170,6 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
     final url = Uri.parse('https://88collection.dndts.net/api/method/attendance_detail');
 
     try {
-      // Retrieve the token
       final token = await _storage.read(key: 'auth_token');
       if (token == null) {
         _showError('User not authenticated. Please login again.');
@@ -206,9 +185,8 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final List<dynamic> attendanceList = data['Data']; // List of attendance data
+        final List<dynamic> attendanceList = data['Data'];
 
-        // Directly store the data as a List<Map<String, dynamic>>
         List<Map<String, dynamic>> attendanceData = attendanceList.map((attendance) {
           return {
             'attendance_date': attendance['attendance_date'] ?? '',
@@ -216,7 +194,6 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
           };
         }).toList();
 
-        // Navigate to the AttendancePage and pass the data
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -235,7 +212,6 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
     final url = Uri.parse('https://88collection.dndts.net/api/method/leave_detail');
 
     try {
-      // Retrieve the token
       final token = await _storage.read(key: 'auth_token');
       if (token == null) {
         _showError('User not authenticated. Please login again.');
@@ -253,7 +229,6 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
         final data = json.decode(response.body);
         final List<dynamic> leaveList = data['Data'];
 
-        // Directly store the data as a List<Map<String, dynamic>>
         List<Map<String, dynamic>> leaveData = leaveList.map((leave) {
           return {
             'leave_type': leave['leave_type'] ?? '',
@@ -281,40 +256,68 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Employee Detail'),
+        title: Text(
+          'Employee Detail',
+          style: TextStyle(fontFamily: 'Times New Roman',color: Colors.white), // Set the text color to white
+        ),
+        backgroundColor: Color(0xFF3d3d61), // Set the background color (use your preferred color)
         actions: [
           IconButton(
             icon: Icon(Icons.exit_to_app),
+            color: Colors.white, // Set the icon color to white
             onPressed: _logout, // Log out when this button is pressed
           ),
         ],
       ),
+
       body: _employeeData == null
           ? Center(child: CircularProgressIndicator())
           : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(_employeeData!['custom_image_link'] ?? '', height: 100),
+            Text('Name: ${_employeeData!['employee_name']}', style: TextStyle(fontSize: 18)),
+            Text('Designation: ${_employeeData!['designation']}', style: TextStyle(fontSize: 18)),
+            Text('Department: ${_employeeData!['Department']}', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 20),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: _fetchAttendanceDetails,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Name: ${_employeeData!['employee_name']}', style: TextStyle(fontSize: 18)),
-                  Text('Gender: ${_employeeData!['gender']}', style: TextStyle(fontSize: 18)),
-                  Text('Date of Birth: ${_employeeData!['date_of_birth']}', style: TextStyle(fontSize: 18)),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _fetchAttendanceDetails, // Navigate to the Attendance page
-                    child: Text('View My Attendance'),
-                  ),
-                  ElevatedButton(
-                    onPressed: _fetchLeaveDetails, // Navigate to the Leave page
-                    child: Text('View My Leaves'),
-                  ),
-                  ElevatedButton(
-                    onPressed: _markCheckin, // Mark Checkin
-                    child: Text('Mark Checkin'),
-                  ),
+                  Image.asset('assets/attendance_svg.png', height: 40, width: 40), // Adjust size as needed
+                   // Space between icon and text
+                  Text(''),
                 ],
               ),
             ),
+            ElevatedButton(
+              onPressed: _fetchLeaveDetails,
+              child: Text('Leaves'),
+            ),
+            ElevatedButton(
+              onPressed: _markCheckin,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset('assets/checkin.jpg', height: 40, width: 40), // Adjust size as needed
+                  // Space between icon and text
+                  Text(''),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

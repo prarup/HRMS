@@ -24,3 +24,5 @@ flutter:
   # Add the assets section here
   assets:
     - assets/applogo.png
+    - assets/attendance_svg.png
+    - assets/checkin.jpg
