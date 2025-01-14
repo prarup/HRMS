@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login() async {
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
-      _showError('Username/Password Is Required.');
+      _showError('Username/Password Is Required');
       return;
     }
 
