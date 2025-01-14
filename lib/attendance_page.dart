@@ -42,7 +42,11 @@ class _AttendancePageState extends State<AttendancePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Attendance Calendar'),
+        title: Text(
+          'Attendance Detail',
+          style: TextStyle(fontFamily: 'Times New Roman',color: Colors.white), // Set the text color to white
+        ),
+        backgroundColor: Color(0xFF3d3d61),
       ),
       body: Column(
         children: [
@@ -63,23 +67,100 @@ class _AttendancePageState extends State<AttendancePage> {
               });
             },
             calendarStyle: CalendarStyle(
-              markersMaxCount: 1,
-              markerDecoration: BoxDecoration(
-                color: Colors.blue,
+              // Remove marker, set to no markers
+              markersMaxCount: 0,
+              todayDecoration: BoxDecoration(
+                color: Colors.blueAccent,
                 shape: BoxShape.circle,
               ),
+            ),
+            daysOfWeekStyle: const DaysOfWeekStyle(
+              weekendStyle: TextStyle(color: Colors.red),
+            ),
+            onPageChanged: (focusedDay) {
+              setState(() {
+                _focusedDay = focusedDay;
+              });
+            },
+            calendarBuilders: CalendarBuilders(
+              // Use the defaultBuilder to customize day appearance
+              defaultBuilder: (context, date, events) {
+                final normalizedDay = DateTime(date.year, date.month, date.day);
+
+                if (_events[normalizedDay] == null || _events[normalizedDay]!.isEmpty) {
+                  return null;
+                }
+
+                final status = _events[normalizedDay]!.first; // Assuming one status per day for simplicity
+                Color backgroundColor;
+                switch (status) {
+                  case 'Present':
+                    backgroundColor = Colors.green.withOpacity(0.3); // Light green for present
+                    break;
+                  case 'Absent':
+                    backgroundColor = Colors.red.withOpacity(0.3); // Light red for absent
+                    break;
+                  case 'On Leave':
+                    backgroundColor = Colors.orange.withOpacity(0.3); // Light orange for on leave
+                    break;
+                  default:
+                    backgroundColor = Colors.transparent;
+                }
+
+                return Container(
+                  child: Center(
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Transform.scale(
+                          scale: 0.6, // Scale down only the circle
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: backgroundColor,
+                              shape: BoxShape.circle, // Make the highlight a circle
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '${date.day}',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+
             ),
           ),
           const SizedBox(height: 8.0),
           Expanded(
             child: _events[_selectedDay] == null || _events[_selectedDay]!.isEmpty
-                ? Center(child: Text('No attendance data for selected day'))
+                ? const Center(child: Text('No attendance data for selected day'))
                 : ListView(
-              children: _events[_selectedDay]!
-                  .map((status) => ListTile(
-                title: Text('Status: $status'),
-              ))
-                  .toList(),
+              children: _events[_selectedDay]!.map((status) {
+                Color textColor;
+                switch (status) {
+                  case 'Present':
+                    textColor = Colors.green;
+                    break;
+                  case 'Absent':
+                    textColor = Colors.red;
+                    break;
+                  case 'On Leave':
+                    textColor = Colors.orange;
+                    break;
+                  default:
+                    textColor = Colors.black;
+                }
+
+                return ListTile(
+                  title: Text(
+                    'Status: $status',
+                    style: TextStyle(color: textColor),
+                  ),
+                );
+              }).toList(),
             ),
           ),
         ],
@@ -87,4 +168,3 @@ class _AttendancePageState extends State<AttendancePage> {
     );
   }
 }
-
