@@ -6,6 +6,7 @@ import 'dart:convert'; // Required for json.decode
 import 'attendance_page.dart'; // Import AttendancePage
 import 'leave_page.dart';
 import 'package:geolocator/geolocator.dart';
+import 'apply_for_leave.dart';
 
 class EmployeeDetailPage extends StatefulWidget {
   const EmployeeDetailPage({super.key});
@@ -282,6 +283,24 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
             Text('Designation: ${_employeeData!['designation']}', style: TextStyle(fontSize: 18)),
             Text('Department: ${_employeeData!['Department']}', style: TextStyle(fontSize: 18)),
             SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                String? token = await _storage.read(key: 'auth_token');
+                if (token == null) {
+                  _showError('User not authenticated. Please login again.');
+                  return;
+                }
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ApplyForLeavePage(authToken: token), // Pass the token here
+                  ),
+                );
+              },
+              child: Text('Apply for Leave'),
+            ),
+
           ],
         ),
       ),
