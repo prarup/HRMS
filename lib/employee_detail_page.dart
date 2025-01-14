@@ -257,7 +257,7 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Employee Details',
+          'Employee Detail',
           style: TextStyle(fontFamily: 'Times New Roman',color: Colors.white), // Set the text color to white
         ),
         backgroundColor: Color(0xFF3d3d61), // Set the background color (use your preferred color)
@@ -278,7 +278,7 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.network(_employeeData!['custom_image_link'] ?? '', height: 100),
-            Text('Names: ${_employeeData!['employee_name']}', style: TextStyle(fontSize: 18)),
+            Text('Name: ${_employeeData!['employee_name']}', style: TextStyle(fontSize: 18)),
             Text('Designation: ${_employeeData!['designation']}', style: TextStyle(fontSize: 18)),
             Text('Department: ${_employeeData!['Department']}', style: TextStyle(fontSize: 18)),
             SizedBox(height: 20),
