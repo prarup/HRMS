@@ -278,7 +278,7 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.network(_employeeData!['custom_image_link'] ?? '', height: 100),
-            Text('Name: ${_employeeData!['employee_name']}', style: TextStyle(fontSize: 18)),
+            Text('Names: ${_employeeData!['employee_name']}', style: TextStyle(fontSize: 18)),
             Text('Designation: ${_employeeData!['designation']}', style: TextStyle(fontSize: 18)),
             Text('Department: ${_employeeData!['Department']}', style: TextStyle(fontSize: 18)),
             SizedBox(height: 20),
