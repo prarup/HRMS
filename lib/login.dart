@@ -5,7 +5,9 @@ import 'dart:convert';
 import 'employee_detail_page.dart';
 
 class LoginPage extends StatefulWidget {
+
   const LoginPage({super.key});
+
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -17,9 +19,25 @@ class _LoginPageState extends State<LoginPage> {
   final _storage = const FlutterSecureStorage();
   bool _isLoading = false;
   bool _obscurePassword = true;
+  String? ip;
+  String? imageUrl;
+  String? company;
 
   final _formKey = GlobalKey<FormState>();
   String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialData();
+  }
+
+  void _loadInitialData() async {
+    ip = await _storage.read(key: 'ip');
+    imageUrl = await _storage.read(key: 'image_url');
+    company = await _storage.read(key: 'company');
+    setState(() {}); // Trigger a rebuild to reflect the updated imageUrl
+  }
 
   void _login() async {
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
@@ -27,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final url = Uri.parse('https://88collection.dndts.net/api/method/frappe.val.api.login');
+    final url = Uri.parse('$ip/api/method/frappe.val.api.login');
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -85,7 +103,6 @@ class _LoginPageState extends State<LoginPage> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,10 +119,13 @@ class _LoginPageState extends State<LoginPage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        Image.asset('assets/applogo.png', height: 100),
+                        if (imageUrl != null)
+                          Image.network(imageUrl!, height: 100)
+                        else
+                          const SizedBox.shrink(), // Placeholder to avoid layout shift
                         const SizedBox(height: 30),
-                        const Text(
-                          'Login to HRMS!',
+                        Text(
+                          'Login to ${company ?? ""} HRMS!',
                           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 5),
@@ -171,7 +191,6 @@ class _LoginPageState extends State<LoginPage> {
                               style: const TextStyle(color: Colors.red),
                             ),
                           ),
-
                         ElevatedButton(
                           onPressed: _login,
                           style: ElevatedButton.styleFrom(
@@ -198,18 +217,18 @@ class _LoginPageState extends State<LoginPage> {
           ),
           if (_isLoading)
             Container(
-              color: Colors.white.withOpacity(0.8), // Semi-transparent background
+              color: Colors.white.withOpacity(0.8),
               child: Center(
                 child: Container(
-                  width: 100, // Width of the white box
-                  padding: const EdgeInsets.all(16), // Padding inside the box
+                  width: 100,
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white, // White background for the box
-                    borderRadius: BorderRadius.circular(12), // Rounded corners
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.2),
-                        blurRadius: 10, // Subtle shadow for the box
+                        blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
                     ],
@@ -218,17 +237,15 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: const [
                       CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // Blue loading bar
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                         strokeWidth: 4,
                       ),
-                      SizedBox(height: 16), // Spacing between loader and text
-
+                      SizedBox(height: 16),
                     ],
                   ),
                 ),
               ),
-            )
-          ,
+            ),
         ],
       ),
     );

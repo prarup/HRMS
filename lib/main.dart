@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'companyscreen.dart';
 import 'login.dart';
 import 'employee_detail_page.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -28,8 +29,8 @@ class MyApp extends StatelessWidget {
           if (snapshot.hasData && snapshot.data != null) {
             return EmployeeDetailPage();
           } else {
-            // If no token, navigate to the LoginPage
-            return LoginPage();
+            // If no token, navigate to the CompanyScreen first
+            return CompanyScreen();
           }
         },
       ),
