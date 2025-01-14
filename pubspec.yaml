@@ -30,3 +30,6 @@ flutter:
     - assets/checkin.jpg
     - assets/next.png
     - assets/company.png
+    - assets/user.png
+    - assets/user.gif
+    - assets/password.gif

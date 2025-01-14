@@ -126,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 30),
                         Text(
                           'Login to ${company ?? ""} HRMS!',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,color: Colors.black),
                         ),
                         const SizedBox(height: 5),
                         const Text(
@@ -142,8 +142,8 @@ class _LoginPageState extends State<LoginPage> {
                             filled: true,
                             fillColor: Colors.grey[200],
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey[400]!),
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: Colors.white!),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -173,8 +173,8 @@ class _LoginPageState extends State<LoginPage> {
                             filled: true,
                             fillColor: Colors.grey[200],
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey[400]!),
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: BorderSide(color: Colors.white!),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
