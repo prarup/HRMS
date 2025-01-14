@@ -11,7 +11,7 @@ class AttendancePage extends StatefulWidget {
 }
 
 class _AttendancePageState extends State<AttendancePage> {
-  late Map<DateTime, List<String>> _events;
+  late Map<DateTime, List<Map<String, dynamic>>> _events; // Change to store complete data for the day
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
 
@@ -22,17 +22,16 @@ class _AttendancePageState extends State<AttendancePage> {
     _selectedDay = DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
   }
 
-  Map<DateTime, List<String>> _mapAttendanceDataToEvents(List<Map<String, dynamic>> data) {
-    Map<DateTime, List<String>> events = {};
+  Map<DateTime, List<Map<String, dynamic>>> _mapAttendanceDataToEvents(List<Map<String, dynamic>> data) {
+    Map<DateTime, List<Map<String, dynamic>>> events = {};
     for (var entry in data) {
       final date = DateTime.parse(entry['attendance_date']);
       final normalizedDate = DateTime(date.year, date.month, date.day);
-      final status = entry['status'];
 
       if (events.containsKey(normalizedDate)) {
-        events[normalizedDate]!.add(status);
+        events[normalizedDate]!.add(entry);
       } else {
-        events[normalizedDate] = [status];
+        events[normalizedDate] = [entry];
       }
     }
     return events;
@@ -44,7 +43,7 @@ class _AttendancePageState extends State<AttendancePage> {
       appBar: AppBar(
         title: Text(
           'Attendance Detail',
-          style: TextStyle(fontFamily: 'Times New Roman',color: Colors.white), // Set the text color to white
+          style: TextStyle(fontFamily: 'Times New Roman', color: Colors.white), // Set the text color to white
         ),
         backgroundColor: Color(0xFF3d3d61),
       ),
@@ -67,7 +66,6 @@ class _AttendancePageState extends State<AttendancePage> {
               });
             },
             calendarStyle: CalendarStyle(
-              // Remove marker, set to no markers
               markersMaxCount: 0,
               todayDecoration: BoxDecoration(
                 color: Colors.blueAccent,
@@ -83,7 +81,6 @@ class _AttendancePageState extends State<AttendancePage> {
               });
             },
             calendarBuilders: CalendarBuilders(
-              // Use the defaultBuilder to customize day appearance
               defaultBuilder: (context, date, events) {
                 final normalizedDay = DateTime(date.year, date.month, date.day);
 
@@ -91,17 +88,17 @@ class _AttendancePageState extends State<AttendancePage> {
                   return null;
                 }
 
-                final status = _events[normalizedDay]!.first; // Assuming one status per day for simplicity
+                final status = _events[normalizedDay]!.first['status']; // Get status from data
                 Color backgroundColor;
                 switch (status) {
                   case 'Present':
-                    backgroundColor = Colors.green.withOpacity(0.3); // Light green for present
+                    backgroundColor = Colors.green.withOpacity(0.3);
                     break;
                   case 'Absent':
-                    backgroundColor = Colors.red.withOpacity(0.3); // Light red for absent
+                    backgroundColor = Colors.red.withOpacity(0.3);
                     break;
                   case 'On Leave':
-                    backgroundColor = Colors.orange.withOpacity(0.3); // Light orange for on leave
+                    backgroundColor = Colors.orange.withOpacity(0.3);
                     break;
                   default:
                     backgroundColor = Colors.transparent;
@@ -113,11 +110,11 @@ class _AttendancePageState extends State<AttendancePage> {
                       alignment: Alignment.center,
                       children: [
                         Transform.scale(
-                          scale: 0.6, // Scale down only the circle
+                          scale: 0.6,
                           child: Container(
                             decoration: BoxDecoration(
                               color: backgroundColor,
-                              shape: BoxShape.circle, // Make the highlight a circle
+                              shape: BoxShape.circle,
                             ),
                           ),
                         ),
@@ -130,7 +127,6 @@ class _AttendancePageState extends State<AttendancePage> {
                   ),
                 );
               },
-
             ),
           ),
           const SizedBox(height: 8.0),
@@ -138,7 +134,12 @@ class _AttendancePageState extends State<AttendancePage> {
             child: _events[_selectedDay] == null || _events[_selectedDay]!.isEmpty
                 ? const Center(child: Text('No attendance data for selected day'))
                 : ListView(
-              children: _events[_selectedDay]!.map((status) {
+              children: _events[_selectedDay]!.map((entry) {
+                final status = entry['status'];
+                final leaveType = entry['leave_type'] ?? 'N/A'; // Handle missing leave_type
+                final inTime = entry['in_time'] ?? 'N/A'; // Handle missing in_time
+                final outTime = entry['out_time'] ?? 'N/A'; // Handle missing out_time
+
                 Color textColor;
                 switch (status) {
                   case 'Present':
@@ -154,10 +155,26 @@ class _AttendancePageState extends State<AttendancePage> {
                     textColor = Colors.black;
                 }
 
-                return ListTile(
-                  title: Text(
-                    'Status: $status',
-                    style: TextStyle(color: textColor),
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  elevation: 4.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(16.0),
+                    title: Text(
+                      'Status: $status',
+                      style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Leave Type: $leaveType'),
+                        Text('In Time: $inTime'),
+                        Text('Out Time: $outTime'),
+                      ],
+                    ),
                   ),
                 );
               }).toList(),
