@@ -16,6 +16,41 @@ class _ApplyForLeavePageState extends State<ApplyForLeavePage> {
   final _fromDateController = TextEditingController();
   final _toDateController = TextEditingController();
   final _reasonController = TextEditingController();
+  String? _selectedLeaveType; // Variable to store selected leave type
+  List<String> _leaveTypes = []; // List to store leave types
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLeaveTypes(); // Fetch leave types on initialization
+  }
+
+  // Method to fetch leave types from the API
+  Future<void> _fetchLeaveTypes() async {
+    final url = Uri.parse('https://88collection.dndts.net/api/method/fetchleavetype');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': widget.authToken,  // Use the passed token
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          _leaveTypes = List<String>.from(data['leave_types'] ?? []);
+        });
+      } else {
+        throw Exception('Failed to fetch leave types');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
 
   // Method to apply for leave
   Future<void> _applyForLeave() async {
@@ -29,7 +64,7 @@ class _ApplyForLeavePageState extends State<ApplyForLeavePage> {
           'Content-Type': 'application/json',
         },
         body: json.encode({
-          'leave_type': _leaveTypeController.text,
+          'leave_type': _selectedLeaveType,
           'from_date': _fromDateController.text,
           'to_date': _toDateController.text,
           'reason': _reasonController.text,
@@ -37,7 +72,6 @@ class _ApplyForLeavePageState extends State<ApplyForLeavePage> {
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Leave application successful!')),
         );
@@ -63,9 +97,22 @@ class _ApplyForLeavePageState extends State<ApplyForLeavePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _leaveTypeController,
-              decoration: InputDecoration(labelText: 'Leave Type'),
+            // Dropdown for selecting leave type
+            DropdownButton<String>(
+              value: _selectedLeaveType,
+              hint: Text('Select Leave Type'),
+              isExpanded: true,
+              onChanged: (newValue) {
+                setState(() {
+                  _selectedLeaveType = newValue;
+                });
+              },
+              items: _leaveTypes.map((leaveType) {
+                return DropdownMenuItem<String>(
+                  value: leaveType,
+                  child: Text(leaveType),
+                );
+              }).toList(),
             ),
             TextField(
               controller: _fromDateController,
