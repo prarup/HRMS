@@ -59,7 +59,10 @@ class _FetchLeaveTypesPageState extends State<FetchLeaveTypesPage> {
                 'leave_type': item['leave_type'],
                 'total_leaves_allocated': (item['total_leaves_allocated'] is double)
                     ? (item['total_leaves_allocated'] as double).toInt()
-                    : item['total_leaves_allocated']
+                    : item['total_leaves_allocated'],
+                'remaining_leave': (item['remaining_leave'] is double)
+                    ? (item['remaining_leave'] as double).toInt()
+                    : item['remaining_leave']
               };
             }).toList();
           }
@@ -88,6 +91,18 @@ class _FetchLeaveTypesPageState extends State<FetchLeaveTypesPage> {
     setState(() {
       _selectedLeaveType = newValue;
     });
+  }
+
+  double _calculateTotalDays() {
+    if (_fromDate != null && _toDate != null) {
+      final difference = _toDate!.difference(_fromDate!);
+      double totalDays = difference.inDays + 1.0; // Add 1 to include both start and end days as a float
+      if (_isHalfDay) {
+        totalDays = totalDays / 2.0; // Divide by 2 to get half a day
+      }
+      return totalDays;
+    }
+    return 0.0; // Return 0 if no dates are selected
   }
 
   // Open Modal Bottom Sheet to select a leave type
@@ -121,8 +136,26 @@ class _FetchLeaveTypesPageState extends State<FetchLeaveTypesPage> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     ) ?? DateTime.now();
+
+    // Validate that fromDate is not earlier than today
+    if (pickedDate.isBefore(DateTime.now().subtract(Duration(days: 1)))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('From Date cannot be earlier than today')),
+      );
+      return;
+    }
+
+    // Validate that toDate is later than fromDate
+    if (initialDate != null && pickedDate.isBefore(initialDate)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('To Date must be later than From Date')),
+      );
+      return;
+    }
+
     onDateSelected(pickedDate);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -142,20 +175,32 @@ class _FetchLeaveTypesPageState extends State<FetchLeaveTypesPage> {
               // Table displaying leave types and allocated leaves
               Table(
                 border: TableBorder.all(color: Colors.grey, width: 1),
+                columnWidths: {
+                  0: FixedColumnWidth(150), // Adjust the width of the 'Leave Type' column
+                  1: FixedColumnWidth(100), // Adjust the width of the 'Allocated' column
+                  2: FixedColumnWidth(100), // Adjust the width of the 'Remaining' column
+                },
                 children: [
                   TableRow(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8),
                         child: Text(
                           'Leave Type',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8),
                         child: Text(
-                          'Allocated Leaves',
+                          'Allocated',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Text(
+                          'Remaining',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -171,6 +216,10 @@ class _FetchLeaveTypesPageState extends State<FetchLeaveTypesPage> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(item['total_leaves_allocated'].toString()),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(item['remaining_leave'].toString()),
                         ),
                       ],
                     );
@@ -232,7 +281,9 @@ class _FetchLeaveTypesPageState extends State<FetchLeaveTypesPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          _fromDate != null ? _fromDate!.toLocal().toString().split(' ')[0] : 'Select Date',
+                          _fromDate != null
+                              ? _fromDate!.toLocal().toString().split(' ')[0]
+                              : 'Select Date',
                           style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                         Icon(Icons.calendar_today, color: Colors.black),
@@ -265,7 +316,9 @@ class _FetchLeaveTypesPageState extends State<FetchLeaveTypesPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          _toDate != null ? _toDate!.toLocal().toString().split(' ')[0] : 'Select Date',
+                          _toDate != null
+                              ? _toDate!.toLocal().toString().split(' ')[0]
+                              : 'Select Date',
                           style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                         Icon(Icons.calendar_today, color: Colors.black),
@@ -276,64 +329,118 @@ class _FetchLeaveTypesPageState extends State<FetchLeaveTypesPage> {
               ),
               SizedBox(height: 20),
 
-              // Half Day Switch
+              // Half Day Checkbox
               Row(
                 children: [
                   Checkbox(
                     value: _isHalfDay,
                     onChanged: (bool? value) {
                       setState(() {
-                        _isHalfDay = value!;
+                        _isHalfDay = value ?? false;
                       });
                     },
                   ),
                   Text(
                     'Half Day',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 16),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
-
-              // Half Day Type Selection
-              if (_isHalfDay)
+              // Half Day Type Dropdown
+              if (_isHalfDay) ...[
+                Text(
+                  'Select Half Day Type',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
                 DropdownButton<String>(
                   value: _selectedHalfDayType,
-                  hint: Text('Select Half Day Type'),
-                  items: _halfDayTypes.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
                   onChanged: (String? newValue) {
                     setState(() {
                       _selectedHalfDayType = newValue;
                     });
                   },
+                  items: _halfDayTypes.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
-              SizedBox(height: 20),
+              ],
 
               // Reason Field
-              TextField(
+              SizedBox(height: 20),
+              TextFormField(
                 controller: _reasonController,
                 decoration: InputDecoration(
-                  labelText: 'Reason',
+                  labelText: 'Reason for Leave',
                   border: OutlineInputBorder(),
                 ),
-                maxLines: 3,
               ),
+
+              SizedBox(height: 20),
+
+              // Total Days Selected Field
+              Text(
+                'Total Days Selected: ${_calculateTotalDays()}',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+
               SizedBox(height: 20),
 
               // Submit Button
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Handle submission
-                  },
-                  child: Text('Submit'),
-                ),
+              ElevatedButton(
+                onPressed: () async {
+                  double totalLeaveDays = _calculateTotalDays();
+
+                  // Prepare the data to be sent in the body
+                  Map<String, dynamic> requestBody = {
+                    'leave_type': _selectedLeaveType,
+                    'from_date': "2025-01-16",
+                    'to_date': "2025-01-16",
+                    'reason': _reasonController.text,
+                    'total_leave_days': totalLeaveDays,
+                    'half_days': _isHalfDay,
+                    'half_day_type': _selectedHalfDayType,
+                  };
+
+                  // Send the POST request
+                  try {
+                    final response = await http.post(
+                      Uri.parse('https://88collection.dndts.net/api/method/leavepost'), // Replace with your API endpoint
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': _authToken!
+                      },
+                      body: json.encode(requestBody), // Encode body as JSON
+                    );
+
+                    if (response.statusCode == 200) {
+                      // Success: Process the response
+                      print('Request succeeded');
+                      print('Response Body: ${response.body}');  // Print the response body
+
+                      // Decode the response if it's in JSON format
+                      var responseData = json.decode(response.body);
+                      print('Response Data: $responseData'); // Print the decoded response data
+
+                      // Show the message from the response
+                      String message = responseData['Data'] ?? 'Unexpected response';  // Default message if 'Data' is missing
+
+                      // Show a Snackbar with the message from the response
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+                    } else {
+                      // Failure: Handle error
+                      print('Failed to submit. Status code: ${response.statusCode}');
+                      print('Response Body: ${response.body}'); // Print the error response body
+                    }
+                  } catch (e) {
+                    print('Error sending request: $e');
+                  }
+                },
+                child: Text('Submit'),
               ),
+
             ],
           ),
         ),
