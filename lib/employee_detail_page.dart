@@ -262,9 +262,10 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
       appBar: AppBar(
         title: Text(
           'Employee Detail',
-          style: TextStyle(fontFamily: 'Times New Roman',color: Colors.white), // Set the text color to white
+          style: TextStyle(
+              fontFamily: 'Times New Roman', color: Colors.white), // Set the text color to white
         ),
-        backgroundColor: Color(0xFF3d3d61), // Set the background color (use your preferred color)
+        backgroundColor: Color(0xFF3d3d61), // Set the background color
         actions: [
           IconButton(
             icon: Icon(Icons.exit_to_app),
@@ -273,37 +274,292 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
           ),
         ],
       ),
-
       body: _employeeData == null
           ? Center(child: CircularProgressIndicator())
           : Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(_employeeData!['custom_image_link'] ?? '', height: 100),
-            Text('Name: ${_employeeData!['employee_name']}', style: TextStyle(fontSize: 18)),
-            Text('Designation: ${_employeeData!['designation']}', style: TextStyle(fontSize: 18)),
-            Text('Department: ${_employeeData!['Department']}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                String? token = await _storage.read(key: 'auth_token');
-                if (token == null) {
-                  _showError('User not authenticated. Please login again.');
-                  return;
-                }
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FetchLeaveTypesPage(), // Pass the token here
-                  ),
-                );
-              },
-              child: Text('Apply for Leave'),
+            Center(  // Center the image
+              child: ClipOval(
+                child: Image.network(
+                  _employeeData!['custom_image_link'] ?? '',
+                  height: 100,
+                  width: 100,  // Ensure the width and height are the same for a perfect circle
+                  fit: BoxFit.cover,  // Ensure the image fits well within the circle
+                ),
+              ),
+            ),
+            Center(  // Center the name text
+              child: Text('${_employeeData!['employee_name']}',
+                  style: TextStyle(fontSize: 18)),
+            ),
+            Center(  // Center the designation text
+              child: Text('${_employeeData!['designation']}',
+                  style: TextStyle(fontSize: 18)),
             ),
 
+            SizedBox(height: 20),
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 4, // Number of columns
+                crossAxisSpacing: 10, // Space between columns
+                mainAxisSpacing: 10, // Space between rows
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      String? token = await _storage.read(key: 'auth_token');
+                      if (token == null) {
+                        _showError('User not authenticated. Please login again.');
+                        return;
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FetchLeaveTypesPage(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // Rounded rectangle shape
+                      ),
+                      padding: EdgeInsets.all(0), // Adjust padding as needed
+                      backgroundColor: Colors.white, // Set button color
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/leave.png', // Replace with your icon path
+                          height: 40, // Set height
+                          width: 40, // Set width
+                        ),
+                        // Space between the icon and text
+                        Text(
+                          'Leave',
+                          style: TextStyle(
+                            fontSize: 12, // Adjust font size
+                            color: Colors.black, // Adjust text color
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: _fetchAttendanceDetails,
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // Rounded rectangle shape
+                      ),
+                      padding: EdgeInsets.all(0), // Adjust padding as needed
+                      backgroundColor: Colors.white, // Set button color
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/attendance.png', // Replace with your icon path
+                          height: 40, // Set height
+                          width: 40, // Set width
+                        ),
+                        // Space between the icon and text
+                        Text(
+                          'Attendance',
+                          style: TextStyle(
+                            fontSize: 12, // Adjust font size
+                            color: Colors.black, // Adjust text color
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Another button action
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // Rounded rectangle shape
+                      ),
+                      padding: EdgeInsets.all(0), // Adjust padding as needed
+                      backgroundColor: Colors.white, // Set button color
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/checkin.jpg', // Replace with your icon path
+                          height: 40, // Set height
+                          width: 40, // Set width
+                        ),
+                        // Space between the icon and text
+                        Text(
+                          'Checkin',
+                          style: TextStyle(
+                            fontSize: 12, // Adjust font size
+                            color: Colors.black, // Adjust text color
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Another button action
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // Rounded rectangle shape
+                      ),
+                      padding: EdgeInsets.all(0), // Adjust padding as needed
+                      backgroundColor: Colors.white, // Set button color
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/team.png', // Replace with your icon path
+                          height: 40, // Set height
+                          width: 40, // Set width
+                        ),
+                        // Space between the icon and text
+                        Text(
+                          'My Team',
+                          style: TextStyle(
+                            fontSize: 12, // Adjust font size
+                            color: Colors.black, // Adjust text color
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Another button action
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // Rounded rectangle shape
+                      ),
+                      padding: EdgeInsets.all(0), // Adjust padding as needed
+                      backgroundColor: Colors.white, // Set button color
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/salary.png', // Replace with your icon path
+                          height: 40, // Set height
+                          width: 40, // Set width
+                        ),
+                        // Space between the icon and text
+                        Text(
+                          'Salary',
+                          style: TextStyle(
+                            fontSize: 12, // Adjust font size
+                            color: Colors.black, // Adjust text color
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Another button action
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // Rounded rectangle shape
+                      ),
+                      padding: EdgeInsets.all(0), // Adjust padding as needed
+                      backgroundColor: Colors.white, // Set button color
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/travel.png', // Replace with your icon path
+                          height: 40, // Set height
+                          width: 40, // Set width
+                        ),
+                        // Space between the icon and text
+                        Text(
+                          'Travel',
+                          style: TextStyle(
+                            fontSize: 12, // Adjust font size
+                            color: Colors.black, // Adjust text color
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Another button action
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // Rounded rectangle shape
+                      ),
+                      padding: EdgeInsets.all(0), // Adjust padding as needed
+                      backgroundColor: Colors.white, // Set button color
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/holidays.png', // Replace with your icon path
+                          height: 40, // Set height
+                          width: 40, // Set width
+                        ),
+                        // Space between the icon and text
+                        Text(
+                          'Holidays',
+                          style: TextStyle(
+                            fontSize: 12, // Adjust font size
+                            color: Colors.black, // Adjust text color
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Another button action
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // Rounded rectangle shape
+                      ),
+                      padding: EdgeInsets.all(0), // Adjust padding as needed
+                      backgroundColor: Colors.white, // Set button color
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/task.png', // Replace with your icon path
+                          height: 40, // Set height
+                          width: 40, // Set width
+                        ),
+                        // Space between the icon and text
+                        Text(
+                          'Tasks',
+                          style: TextStyle(
+                            fontSize: 12, // Adjust font size
+                            color: Colors.black, // Adjust text color
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Add more buttons as needed
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -316,8 +572,8 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset('assets/attendance_svg.png', height: 40, width: 40), // Adjust size as needed
-                  // Space between icon and text
+                  Image.asset('assets/attendance_svg.png',
+                      height: 40, width: 40), // Adjust size as needed
                   Text(''),
                 ],
               ),
@@ -332,7 +588,6 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.asset('assets/checkin.jpg', height: 40, width: 40), // Adjust size as needed
-                  // Space between icon and text
                   Text(''),
                 ],
               ),
@@ -342,4 +597,5 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
       ),
     );
   }
+
 }

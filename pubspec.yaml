@@ -33,3 +33,10 @@ flutter:
     - assets/user.png
     - assets/user.gif
     - assets/password.gif
+    - assets/leave.png
+    - assets/attendance.png
+    - assets/team.png
+    - assets/salary.png
+    - assets/travel.png
+    - assets/holidays.png
+    - assets/task.png
