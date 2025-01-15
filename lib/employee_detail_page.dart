@@ -294,7 +294,7 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ApplyForLeavePage(authToken: token), // Pass the token here
+                    builder: (context) => FetchLeaveTypesPage(), // Pass the token here
                   ),
                 );
               },
