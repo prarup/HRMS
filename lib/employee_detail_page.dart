@@ -260,24 +260,22 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Employee Detail',
-          style: TextStyle(
-              fontFamily: 'Times New Roman', color: Colors.white), // Set the text color to white
-        ),
-        backgroundColor: Color(0xFF3d3d61), // Set the background color
+
+        backgroundColor: Colors.white, // Set the background color
         actions: [
           IconButton(
             icon: Icon(Icons.exit_to_app),
-            color: Colors.white, // Set the icon color to white
+            color: Colors.black, // Set the icon color to white
             onPressed: _logout, // Log out when this button is pressed
           ),
         ],
       ),
+      backgroundColor: Colors.white,
       body: _employeeData == null
           ? Center(child: CircularProgressIndicator())
           : Padding(
         padding: const EdgeInsets.all(16.0),
+
         child: Column(
 
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,25 +284,26 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
               child: ClipOval(
                 child: Image.network(
                   _employeeData!['custom_image_link'] ?? '',
-                  height: 100,
-                  width: 100,  // Ensure the width and height are the same for a perfect circle
+                  height: 120,
+                  width: 120,  // Ensure the width and height are the same for a perfect circle
                   fit: BoxFit.cover,  // Ensure the image fits well within the circle
                 ),
               ),
             ),
+            SizedBox(height: 10),
             Center(  // Center the name text
               child: Text('${_employeeData!['employee_name']}',
-                  style: TextStyle(fontSize: 18)),
+                  style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold)),
             ),
             Center(  // Center the designation text
               child: Text('${_employeeData!['designation']}',
-                  style: TextStyle(fontSize: 18)),
+                  style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
             ),
 
-            SizedBox(height: 20),
+            SizedBox(height: 100),
             Expanded(
               child: GridView.count(
-                crossAxisCount: 4, // Number of columns
+                crossAxisCount: 3, // Number of columns
                 crossAxisSpacing: 10, // Space between columns
                 mainAxisSpacing: 10, // Space between rows
                 children: [
@@ -333,7 +332,7 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset(
-                          'assets/leave.png', // Replace with your icon path
+                          'assets/leaveicon.png', // Replace with your icon path
                           height: 40, // Set height
                           width: 40, // Set width
                         ),
@@ -556,6 +555,36 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
                       ],
                     ),
                   ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Another button action
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8), // Rounded rectangle shape
+                      ),
+                      padding: EdgeInsets.all(0), // Adjust padding as needed
+                      backgroundColor: Colors.white, // Set button color
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/calendar.png', // Replace with your icon path
+                          height: 40, // Set height
+                          width: 40, // Set width
+                        ),
+                        // Space between the icon and text
+                        Text(
+                          'Events',
+                          style: TextStyle(
+                            fontSize: 12, // Adjust font size
+                            color: Colors.black, // Adjust text color
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                   // Add more buttons as needed
                 ],
               ),
@@ -564,37 +593,28 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
+        color: Colors.white,  // Set the background color to grey
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,  // Center the content
           children: [
-            ElevatedButton(
-              onPressed: _fetchAttendanceDetails,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset('assets/attendance_svg.png',
-                      height: 40, width: 40), // Adjust size as needed
-                  Text(''),
-                ],
-              ),
-            ),
-            ElevatedButton(
-              onPressed: _fetchLeaveDetails,
-              child: Text('Leaves'),
-            ),
-            ElevatedButton(
+            TextButton(
               onPressed: _markCheckin,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset('assets/checkin.jpg', height: 40, width: 40), // Adjust size as needed
-                  Text(''),
-                ],
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.all(0),  // Remove any padding around the button
+                shape: CircleBorder(),  // Make the button circular
+              ),
+              child: Image.asset(
+                'assets/11527831.png',  // Replace with the path to your image
+                height: 100,  // Set the height of the image
+                width: 100,  // Set the width of the image
               ),
             ),
           ],
         ),
       ),
+
+
+
     );
   }
 
