@@ -392,12 +392,17 @@ class _FetchLeaveTypesPageState extends State<FetchLeaveTypesPage> {
               ElevatedButton(
                 onPressed: () async {
                   double totalLeaveDays = _calculateTotalDays();
+                  print(_fromDate);
+
+                  // Convert DateTime objects to ISO 8601 string format, with null check
+                  String fromDateString = _fromDate?.toIso8601String() ?? ''; // Provide a fallback if null
+                  String toDateString = _toDate?.toIso8601String() ?? ''; // Provide a fallback if null
 
                   // Prepare the data to be sent in the body
                   Map<String, dynamic> requestBody = {
                     'leave_type': _selectedLeaveType,
-                    'from_date': "2025-01-16",
-                    'to_date': "2025-01-16",
+                    'from_date': fromDateString, // Use the string version of the date
+                    'to_date': toDateString,     // Use the string version of the date
                     'reason': _reasonController.text,
                     'total_leave_days': totalLeaveDays,
                     'half_days': _isHalfDay,
