@@ -300,7 +300,7 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
                   style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
             ),
 
-            SizedBox(height: 100),
+            SizedBox(height: 80),
             Expanded(
               child: GridView.count(
                 crossAxisCount: 3, // Number of columns
