@@ -90,8 +90,8 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
           "coordinates": [position.longitude, position.latitude]
         }
       });
-
-      final url = Uri.parse('https://88collection.dndts.net/api/method/checkin');
+      String? ip = await _storage.read(key: 'ip');
+      final url = Uri.parse('$ip/api/method/checkin');
       final response = await http.post(
         url,
         headers: {
@@ -112,7 +112,8 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
   }
 
   void _fetchEmployeeDetail() async {
-    final url = Uri.parse('https://88collection.dndts.net/api/method/employee_detail');
+    String? ip = await _storage.read(key: 'ip');
+    final url = Uri.parse('$ip/api/method/employee_detail');
 
     try {
       String? token = await _storage.read(key: 'auth_token');
@@ -168,7 +169,8 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
   }
 
   void _fetchAttendanceDetails() async {
-    final url = Uri.parse('https://88collection.dndts.net/api/method/attendance_detail');
+    String? ip = await _storage.read(key: 'ip');
+    final url = Uri.parse('$ip/api/method/attendance_detail');
 
     try {
       final token = await _storage.read(key: 'auth_token');
@@ -210,7 +212,8 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
   }
 
   void _fetchLeaveDetails() async {
-    final url = Uri.parse('https://88collection.dndts.net/api/method/leave_detail');
+    String? ip = await _storage.read(key: 'ip');
+    final url = Uri.parse('$ip/api/method/leave_detail');
 
     try {
       final token = await _storage.read(key: 'auth_token');
@@ -314,7 +317,7 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Image.asset('assets/attendance_svg.png', height: 40, width: 40), // Adjust size as needed
-                   // Space between icon and text
+                  // Space between icon and text
                   Text(''),
                 ],
               ),
