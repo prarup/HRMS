@@ -162,8 +162,9 @@ class _FetchLeaveTypesPageState extends State<FetchLeaveTypesPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Leave Application', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color(0xFF3d3d61),
+        backgroundColor: Colors.blue,
       ),
+      backgroundColor: Colors.white,
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView( // Wrap the entire body in a SingleChildScrollView
@@ -174,58 +175,74 @@ class _FetchLeaveTypesPageState extends State<FetchLeaveTypesPage> {
             children: [
               // Table displaying leave types and allocated leaves
               Table(
-                border: TableBorder.all(color: Colors.grey, width: 1),
+                border: TableBorder.all(color: Colors.grey[300]!, width: 1), // Lighten the border color for a softer look
                 columnWidths: {
-                  0: FixedColumnWidth(150), // Adjust the width of the 'Leave Type' column
-                  1: FixedColumnWidth(100), // Adjust the width of the 'Allocated' column
-                  2: FixedColumnWidth(100), // Adjust the width of the 'Remaining' column
+                  0: FixedColumnWidth(175), // Slightly wider 'Leave Type' column
+                  1: FixedColumnWidth(103), // Wider 'Allocated' column for numbers
+                  2: FixedColumnWidth(115), // Wider 'Remaining' column
                 },
                 children: [
+                  // Header Row
                   TableRow(
+                    decoration: BoxDecoration(color: Colors.grey[100]), // Light grey background for header
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0), // Adjust padding for header
                         child: Text(
                           'Leave Type',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black87, // Darker color for better readability
+                          ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                         child: Text(
                           'Allocated',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                         child: Text(
                           'Remaining',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
                     ],
                   ),
+                  // Data Rows
                   ..._leaveData.map((item) {
                     return TableRow(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(item['leave_type']),
+                          padding: const EdgeInsets.all(12.0), // Adjust padding for content cells
+                          child: Text(item['leave_type'], style: TextStyle(fontSize: 14)),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(item['total_leaves_allocated'].toString()),
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(item['total_leaves_allocated'].toString(), style: TextStyle(fontSize: 14)),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(item['remaining_leave'].toString()),
+                          padding: const EdgeInsets.all(12.0),
+                          child: Text(item['remaining_leave'].toString(), style: TextStyle(fontSize: 14)),
                         ),
                       ],
                     );
                   }).toList(),
                 ],
-              ),
+              )
+              ,
               SizedBox(height: 20),  // Space between the table and other form fields
 
               // Leave Type Selection
@@ -389,62 +406,68 @@ class _FetchLeaveTypesPageState extends State<FetchLeaveTypesPage> {
               SizedBox(height: 20),
 
               // Submit Button
-              ElevatedButton(
-                onPressed: () async {
-                  double totalLeaveDays = _calculateTotalDays();
-                  print(_fromDate);
+    ElevatedButton(
+    onPressed: () async {
+    double totalLeaveDays = _calculateTotalDays();
+    print(_fromDate);
 
-                  // Convert DateTime objects to ISO 8601 string format, with null check
-                  String fromDateString = _fromDate?.toIso8601String() ?? ''; // Provide a fallback if null
-                  String toDateString = _toDate?.toIso8601String() ?? ''; // Provide a fallback if null
+    // Convert DateTime objects to ISO 8601 string format, with null check
+    String fromDateString = _fromDate?.toIso8601String() ?? ''; // Provide a fallback if null
+    String toDateString = _toDate?.toIso8601String() ?? ''; // Provide a fallback if null
 
-                  // Prepare the data to be sent in the body
-                  Map<String, dynamic> requestBody = {
-                    'leave_type': _selectedLeaveType,
-                    'from_date': fromDateString, // Use the string version of the date
-                    'to_date': toDateString,     // Use the string version of the date
-                    'reason': _reasonController.text,
-                    'total_leave_days': totalLeaveDays,
-                    'half_days': _isHalfDay,
-                    'half_day_type': _selectedHalfDayType,
-                  };
+    // Prepare the data to be sent in the body
+    Map<String, dynamic> requestBody = {
+    'leave_type': _selectedLeaveType,
+    'from_date': fromDateString, // Use the string version of the date
+    'to_date': toDateString,     // Use the string version of the date
+    'reason': _reasonController.text,
+    'total_leave_days': totalLeaveDays,
+    'half_days': _isHalfDay,
+    'half_day_type': _selectedHalfDayType,
+    };
 
-                  // Send the POST request
-                  try {
-                    final response = await http.post(
-                      Uri.parse('https://88collection.dndts.net/api/method/leavepost'), // Replace with your API endpoint
-                      headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': _authToken!
-                      },
-                      body: json.encode(requestBody), // Encode body as JSON
-                    );
+    // Send the POST request
+    try {
+    final response = await http.post(
+    Uri.parse('https://88collection.dndts.net/api/method/leavepost'), // Replace with your API endpoint
+    headers: {
+    'Content-Type': 'application/json',
+    'Authorization': _authToken!
+    },
+    body: json.encode(requestBody), // Encode body as JSON
+    );
 
-                    if (response.statusCode == 200) {
-                      // Success: Process the response
-                      print('Request succeeded');
-                      print('Response Body: ${response.body}');  // Print the response body
+    if (response.statusCode == 200) {
+    // Success: Process the response
+    print('Request succeeded');
+    print('Response Body: ${response.body}');  // Print the response body
 
-                      // Decode the response if it's in JSON format
-                      var responseData = json.decode(response.body);
-                      print('Response Data: $responseData'); // Print the decoded response data
+    // Decode the response if it's in JSON format
+    var responseData = json.decode(response.body);
+    print('Response Data: $responseData'); // Print the decoded response data
 
-                      // Show the message from the response
-                      String message = responseData['Data'] ?? 'Unexpected response';  // Default message if 'Data' is missing
+    // Show the message from the response
+    String message = responseData['Data'] ?? 'Unexpected response';  // Default message if 'Data' is missing
 
-                      // Show a Snackbar with the message from the response
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-                    } else {
-                      // Failure: Handle error
-                      print('Failed to submit. Status code: ${response.statusCode}');
-                      print('Response Body: ${response.body}'); // Print the error response body
-                    }
-                  } catch (e) {
-                    print('Error sending request: $e');
-                  }
-                },
-                child: Text('Submit'),
-              ),
+    // Show a Snackbar with the message from the response
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    } else {
+    // Failure: Handle error
+    print('Failed to submit. Status code: ${response.statusCode}');
+    print('Response Body: ${response.body}'); // Print the error response body
+    }
+    } catch (e) {
+    print('Error sending request: $e');
+    }
+    },
+    style: ElevatedButton.styleFrom(
+    minimumSize: Size(double.infinity, 50), // Full width, height of 50
+    backgroundColor: Colors.blue, // Blue background
+    foregroundColor: Colors.white, // White text
+    ),
+    child: Text('Submit'),
+    )
+    ,
 
             ],
           ),

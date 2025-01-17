@@ -300,7 +300,9 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
                   style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
             ),
 
-            SizedBox(height: 80),
+
+
+            SizedBox(height: 20),
             Expanded(
               child: GridView.count(
                 crossAxisCount: 3, // Number of columns
@@ -584,7 +586,8 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
                         ),
                       ],
                     ),
-                  )
+                  ),
+
                   // Add more buttons as needed
                 ],
               ),
@@ -593,25 +596,37 @@ class _EmployeeDetailPageState extends State<EmployeeDetailPage> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.white,  // Set the background color to grey
+        color: Colors.white, // Set the background color to white
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,  // Center the content
+          mainAxisAlignment: MainAxisAlignment.center, // Center the button in the BottomAppBar
           children: [
-            TextButton(
-              onPressed: _markCheckin,
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.all(0),  // Remove any padding around the button
-                shape: CircleBorder(),  // Make the button circular
-              ),
-              child: Image.asset(
-                'assets/11527831.png',  // Replace with the path to your image
-                height: 100,  // Set the height of the image
-                width: 100,  // Set the width of the image
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 2, // Set width to half the screen width
+              child: TextButton.icon(
+                onPressed: _markCheckin, // Call your check-in function
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.blue, // Set button background color
+                  padding: EdgeInsets.symmetric(vertical: 15), // Add padding for better touch target
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), // Set rounded corners
+                  ),
+                ),
+                icon: Icon(Icons.add, color: Colors.white), // Plus icon
+                label: Text(
+                  'Mark Check-In', // Button label
+                  style: TextStyle(
+                    color: Colors.white, // Text color
+                    fontSize: 16, // Text size
+                    fontWeight: FontWeight.bold, // Bold text
+                  ),
+                ),
               ),
             ),
           ],
         ),
       ),
+
+
 
 
 
